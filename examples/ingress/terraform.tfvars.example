@@ -1,0 +1,43 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
+# --- Provider --- #
+region = "us-east-1"
+
+# ---Common --- #
+friendly_name_prefix = "<acme-ingress>" #This should be unique across all deployments
+common_tags = {
+  App         = "<boundary-worker>"
+  Env         = "<sandbox>"
+  Owner       = "<YourName>"
+  worker-type = "<ingress>"
+}
+
+# ---Boundary configuration settings --- #
+boundary_version         = "<0.17.1+ent>"
+boundary_upstream        = ["<controller-cluster-lb-fqdn>"]  #The FQDN of the Boundary Controller Cluster LB
+boundary_upstream_port   = <9201> #Typically 9201 if upstream is Boundary Controller, 9202 if upstream is Worker
+worker_is_internal       = <false>
+kms_worker_arn           = "<kms-worker-arn>"
+enable_session_recording = <true>
+worker_tags = {
+  <bsr> = <"enabled">
+}
+
+# --- Networking --- #
+vpc_id                           = "<my-vpc-id>"
+worker_subnet_ids                = ["<my-worker-subnet-id-a>", "<my-worker-subnet-id-b>", "<my-worker-subnet-id-c>"]
+cidr_allow_ingress_boundary_9202 = ["<10.0.0.0/16>"]
+cidr_allow_ingress_ec2_ssh       = ["<10.0.0.0/16>"]
+create_lb                        = <true>
+
+# --- Compute --- #
+asg_instance_count = <1>
+ec2_ssh_key_pair   = <"my-ec2-ssh-key-pair">
+ec2_allow_ssm      = <true>
+
+# --- S3 --- #
+bsr_s3_bucket_arn = <s3-bucket-arn>
+
+# --- IAM --- #
+create_boundary_worker_role  = <true>

@@ -1,0 +1,36 @@
+# Copyright (c) HashiCorp, Inc.
+# SPDX-License-Identifier: MPL-2.0
+
+# --- Provider --- #
+region = "us-east-1"
+
+# ---Common --- #
+friendly_name_prefix = "<acme-hcp>" #This should be unique across all deployments
+common_tags = {
+  App         = "<boundary-worker>"
+  Env         = "<sandbox>"
+  Owner       = "<YourName>"
+  worker-type = "<hcp>"
+}
+
+# ---Boundary configuration settings --- #
+boundary_version         = "<0.17.1+ent>"
+worker_is_internal       = <true>
+enable_session_recording = <true>
+hcp_boundary_cluster_id  = "<id>"
+worker_tags = {
+  bsr = "enabled"
+}
+
+# --- Networking --- #
+vpc_id                           = "<my-vpc-id>"
+worker_subnet_ids                = ["<my-worker-subnet-id-a>", "<my-worker-subnet-id-b>", "<my-worker-subnet-id-c>"]
+cidr_allow_ingress_boundary_9202 = ["<10.0.0.0/16>"]
+cidr_allow_ingress_ec2_ssh       = ["<10.0.0.0/16>"]
+create_lb                        = <false>
+
+# --- IAM --- #
+create_boundary_worker_role              = <true>
+
+# --- S3 --- #
+bsr_s3_bucket_arn = "<existing-bucket-arn>"
