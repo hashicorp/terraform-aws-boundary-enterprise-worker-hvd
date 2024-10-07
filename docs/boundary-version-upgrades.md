@@ -10,14 +10,14 @@ This module includes an input variable named `boundary_version` that dictates wh
 
 1. Determine your desired version of Boundary from the [Boundary Release Notes](https://developer.hashicorp.com/boundary/docs/release-notes) page.
 
-3. Update the value of the `boundary_version` input variable within your `terraform.tfvars` file.
+1. Update the value of the `boundary_version` input variable within your `terraform.tfvars` file.
 
-```hcl
-    boundary_version = "0.17.1+ent"
-```
+    ```hcl
+        boundary_version = "0.17.1+ent"
+    ```
 
-4. From within the directory managing your Boundary deployment, run `terraform apply` to update the Boundary EC2 Launch Template.
+1. From within the directory managing your Boundary deployment, run `terraform apply` to update the Boundary EC2 Launch Template.
 
-5. During a maintenance window, terminate the running Boundary EC2 instance(s) which will trigger the Autoscaling Group to spawn new instance(s) from the latest version of the Boundary EC2 Launch Template. This process will effectively re-install Boundary on the new instance(s).
+1. During a maintenance window, terminate the running Boundary EC2 instance(s) which will trigger the Autoscaling Group to spawn new instance(s) from the latest version of the Boundary EC2 Launch Template. This process will effectively re-install Boundary on the new instance(s).
 
-6. Ensure that the EC2 instance(s) within the Boundary worker have been replaced/re-imaged with the changes. Monitor the cloud-init processes to ensure a successful re-install.
+1. Ensure that the EC2 instance(s) within the Boundary worker have been replaced/re-imaged with the changes. Monitor the cloud-init processes to ensure a successful re-install.
