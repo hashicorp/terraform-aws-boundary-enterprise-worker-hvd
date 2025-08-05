@@ -11,7 +11,11 @@ BOUNDARY_DIR_LOGS="/var/log/boundary"
 BOUNDARY_DIR_BIN="${boundary_dir_bin}"
 BOUNDARY_USER="boundary"
 BOUNDARY_GROUP="boundary"
-BOUNDARY_INSTALL_URL="${boundary_install_url}"
+# BOUNDARY_INSTALL_URL="${boundary_install_url}"
+PRODUCT="boundary"
+OS_ARCH="linux_$( dpkg --print-architecture )"
+BOUNDARY_VERSION="${boundary_version}"
+VERSION=$BOUNDARY_VERSION
 REQUIRED_PACKAGES="jq unzip"
 ADDITIONAL_PACKAGES="${additional_package_names}"
 AWS_REGION="${aws_region}"
@@ -136,19 +140,65 @@ function directory_create {
   log "INFO" "Done creating necessary directories."
 }
 
+function checksum_verify {
+  # https://www.hashicorp.com/en/trust/security
+  # checksum_verify downloads the $$PRODUCT binary and verifies its integrity
+  log "INFO" "Verifying the integrity of the $${PRODUCT} binary."
+  export GNUPGHOME=./.gnupg
+  sudo curl -s https://www.hashicorp.com/.well-known/pgp-key.txt | gpg --import
+
+	log "INFO" "Downloading $${PRODUCT} Enterprise binary"
+  sudo curl -Os https://releases.hashicorp.com/"$${PRODUCT}"/"$${VERSION}"/"$${PRODUCT}"_"$${VERSION}"_"$${OS_ARCH}".zip
+  sudo curl -Os https://releases.hashicorp.com/"$${PRODUCT}"/"$${VERSION}"/"$${PRODUCT}"_"$${VERSION}"_SHA256SUMS
+  sudo curl -Os https://releases.hashicorp.com/"$${PRODUCT}"/"$${VERSION}"/"$${PRODUCT}"_"$${VERSION}"_SHA256SUMS.sig
+  # Verify the signature file is untampered.
+  gpg --verify "$${PRODUCT}"_"$${VERSION}"_SHA256SUMS.sig "$${PRODUCT}"_"$${VERSION}"_SHA256SUMS
+
+  # Verify the SHASUM matches the archive.
+  shasum -a 256 -c "$${PRODUCT}"_"$${VERSION}"_SHA256SUMS --ignore-missing
+	if [[ $? -ne 0 ]]; then
+		log "ERROR" "Checksum verification failed for the $${PRODUCT} binary."
+		exit_script 1
+	fi
+
+	log "INFO" "Checksum verification passed for the $${PRODUCT} binary."
+
+	# Remove the downloaded files to clean up
+	sudo rm -f "$${PRODUCT}"_"$${VERSION}"_SHA256SUMS "$${PRODUCT}"_"$${VERSION}"_SHA256SUMS.sig
+
+}
+
+# # install_boundary_binary downloads the Boundary binary and puts it in dedicated bin directory
+# function install_boundary_binary {
+#   log "INFO" "Installing Boundary binary to: $BOUNDARY_DIR_BIN..."
+
+#   # Download the Boundary binary to the dedicated bin directory
+#   sudo curl -so $BOUNDARY_DIR_BIN/boundary.zip $BOUNDARY_INSTALL_URL
+
+#   # Unzip the Boundary binary
+#   sudo unzip $BOUNDARY_DIR_BIN/boundary.zip boundary -d $BOUNDARY_DIR_BIN
+
+#   sudo rm $BOUNDARY_DIR_BIN/boundary.zip
+
+#   log "INFO" "Done installing Boundary binary."
+# }
+
 # install_boundary_binary downloads the Boundary binary and puts it in dedicated bin directory
 function install_boundary_binary {
   log "INFO" "Installing Boundary binary to: $BOUNDARY_DIR_BIN..."
 
-  # Download the Boundary binary to the dedicated bin directory
-  sudo curl -so $BOUNDARY_DIR_BIN/boundary.zip $BOUNDARY_INSTALL_URL
+	sudo unzip "$${PRODUCT}"_"$${BOUNDARY_VERSION}"_"$${OS_ARCH}".zip  boundary -d $BOUNDARY_DIR_BIN
+	sudo unzip "$${PRODUCT}"_"$${BOUNDARY_VERSION}"_"$${OS_ARCH}".zip -x boundary -d $BOUNDARY_DIR_LICENSE
+	sudo rm -f "$${PRODUCT}"_"$${BOUNDARY_VERSION}"_"$${OS_ARCH}".zip
 
-  # Unzip the Boundary binary
-  sudo unzip $BOUNDARY_DIR_BIN/boundary.zip boundary -d $BOUNDARY_DIR_BIN
+	# Set the permissions for the Boundary binary
+	sudo chmod 0755 $BOUNDARY_DIR_BIN/boundary
+	sudo chown $BOUNDARY_USER:$BOUNDARY_GROUP $BOUNDARY_DIR_BIN/boundary
 
-  sudo rm $BOUNDARY_DIR_BIN/boundary.zip
+	# Create a symlink to the Boundary binary in /usr/local/bin
+	sudo ln -sf $BOUNDARY_DIR_BIN/boundary /usr/local/bin/boundary
 
-  log "INFO" "Done installing Boundary binary."
+	log "INFO" "Boundary binary installed successfully at $BOUNDARY_DIR_BIN/boundary"
 }
 
 function generate_boundary_config {

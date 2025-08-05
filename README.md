@@ -176,6 +176,24 @@ Below are links to docs pages related to deployment customizations and day 2 ope
 - [Upgrading Boundary version](https://github.com/hashicorp/terraform-aws-boundary-enterprise-worker-hvd/blob/main/docs/boundary-version-upgrades.md)
 - [Updating/modifying Boundary configuration settings](https://github.com/hashicorp/terraform-aws-boundary-enterprise-worker-hvd/blob/main/docs/boundary-config-settings.md)
 
+
+## Troubleshooting
+
+During deployment the output of the `user_data` script can be traced in `/var/log/cloud-init.log`, `/var/log/cloud-init-output.log` and `/var/log/vault-cloud-init.log` due to `set -xeuo pipefail` in the default  `install-vault.sh.tpl`
+For help debugging cloud init and user data scripts
+- <https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html#userdata-linux>
+- <https://cloudinit.readthedocs.io/en/latest/howto/debugging.html#cloud-init-ran-but-didn-t-do-what-i-want-it-to>
+
+## Module support
+
+This open source software is maintained by the HashiCorp Technical Field Organization, independently of our enterprise products. While our Support Engineering team provides dedicated support for our enterprise offerings, this open source software is not included.
+
+- For help using this open source software, please engage your account team.
+- To report bugs/issues with this open source software, please open them directly against this code repository using the GitHub issues feature.
+
+Please note that there is no official Service Level Agreement (SLA) for support of this software as a HashiCorp customer. This software falls under the definition of Community Software/Versions in your Agreement. We appreciate your understanding and collaboration in improving our open source projects.
+
+
 <!-- BEGIN_TF_DOCS -->
 ## Module support
 
