@@ -204,20 +204,6 @@ function checksum_verify {
 
 }
 
-# # install_boundary_binary downloads the Boundary binary and puts it in dedicated bin directory
-# function install_boundary_binary {
-#   log "INFO" "Installing Boundary binary to: $BOUNDARY_DIR_BIN..."
-
-#   # Download the Boundary binary to the dedicated bin directory
-#   sudo curl -so $BOUNDARY_DIR_BIN/boundary.zip $BOUNDARY_INSTALL_URL
-
-#   # Unzip the Boundary binary
-#   sudo unzip $BOUNDARY_DIR_BIN/boundary.zip boundary -d $BOUNDARY_DIR_BIN
-
-#   sudo rm $BOUNDARY_DIR_BIN/boundary.zip
-
-#   log "INFO" "Done installing Boundary binary."
-# }
 
 # install_boundary_binary downloads the Boundary binary and puts it in dedicated bin directory
 function install_boundary_binary {
