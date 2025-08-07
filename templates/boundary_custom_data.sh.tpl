@@ -7,6 +7,7 @@ BOUNDARY_DIR_CONFIG="${boundary_dir_config}"
 BOUNDARY_CONFIG_PATH="$BOUNDARY_DIR_CONFIG/worker.hcl"
 BOUNDARY_DIR_DATA="${boundary_dir_home}/data"
 BOUNDARY_DIR_BSR="${boundary_dir_home}/bsr"
+BOUNDARY_DIR_LICENSE="${boundary_dir_home}/license"
 BOUNDARY_DIR_LOGS="/var/log/boundary"
 BOUNDARY_DIR_BIN="${boundary_dir_bin}"
 BOUNDARY_USER="boundary"
@@ -174,9 +175,9 @@ function checksum_verify {
 
 	log "INFO" "Downloading $${PRODUCT} binary"
   sudo curl -Os https://releases.hashicorp.com/"$${PRODUCT}"/"$${VERSION}"/"$${PRODUCT}"_"$${VERSION}"_"$${OS_ARCH}".zip
-	log "INFO" "Downloading Vault Enterprise binary checksum files"
+	log "INFO" "Downloading $${product} Enterprise binary checksum files"
   sudo curl -Os https://releases.hashicorp.com/"$${PRODUCT}"/"$${VERSION}"/"$${PRODUCT}"_"$${VERSION}"_SHA256SUMS
-	log "INFO" "Downloading Vault Enterprise binary checksum signature file"
+	log "INFO" "Downloading $${product} Enterprise binary checksum signature file"
   sudo curl -Os https://releases.hashicorp.com/"$${PRODUCT}"/"$${VERSION}"/"$${PRODUCT}"_"$${VERSION}"_SHA256SUMS.sig
   log "INFO" "Verifying the signature file is untampered."
   gpg --verify "$${PRODUCT}"_"$${VERSION}"_SHA256SUMS.sig "$${PRODUCT}"_"$${VERSION}"_SHA256SUMS
