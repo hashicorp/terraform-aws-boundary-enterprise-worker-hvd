@@ -164,10 +164,10 @@ function directory_create {
 }
 
 function checksum_verify {
-  local os_arch="$1"
+  local OS_ARCH_="$1"
 
   # https://www.hashicorp.com/en/trust/security
-  # checksum_verify downloads the $$PRODUCT binary and verifies its integrity
+  # checksum_verify downloads the $${PRODUCT} binary and verifies its integrity
   log "INFO" "Verifying the integrity of the $${PRODUCT} binary."
   export GNUPGHOME=./.gnupg
   log "INFO" "Importing HashiCorp GPG key."
@@ -175,9 +175,9 @@ function checksum_verify {
 
 	log "INFO" "Downloading $${PRODUCT} binary"
   sudo curl -Os https://releases.hashicorp.com/"$${PRODUCT}"/"$${VERSION}"/"$${PRODUCT}"_"$${VERSION}"_"$${OS_ARCH}".zip
-	log "INFO" "Downloading $${product} Enterprise binary checksum files"
+	log "INFO" "Downloading $${PRODUCT} Enterprise binary checksum files"
   sudo curl -Os https://releases.hashicorp.com/"$${PRODUCT}"/"$${VERSION}"/"$${PRODUCT}"_"$${VERSION}"_SHA256SUMS
-	log "INFO" "Downloading $${product} Enterprise binary checksum signature file"
+	log "INFO" "Downloading $${PRODUCT} Enterprise binary checksum signature file"
   sudo curl -Os https://releases.hashicorp.com/"$${PRODUCT}"/"$${VERSION}"/"$${PRODUCT}"_"$${VERSION}"_SHA256SUMS.sig
   log "INFO" "Verifying the signature file is untampered."
   gpg --verify "$${PRODUCT}"_"$${VERSION}"_SHA256SUMS.sig "$${PRODUCT}"_"$${VERSION}"_SHA256SUMS
@@ -222,8 +222,8 @@ function checksum_verify {
 # install_boundary_binary downloads the Boundary binary and puts it in dedicated bin directory
 function install_boundary_binary {
   local os_arch="$1"
-  log "INFO" "Installing Boundary binary to: $BOUNDARY_DIR_BIN..."
 
+  log "INFO" "Installing Boundary binary to: $BOUNDARY_DIR_BIN..."
 	sudo unzip "$${PRODUCT}"_"$${BOUNDARY_VERSION}"_"$${OS_ARCH}".zip  boundary -d $BOUNDARY_DIR_BIN
 	sudo unzip "$${PRODUCT}"_"$${BOUNDARY_VERSION}"_"$${OS_ARCH}".zip -x boundary -d $BOUNDARY_DIR_LICENSE
 	sudo rm -f "$${PRODUCT}"_"$${BOUNDARY_VERSION}"_"$${OS_ARCH}".zip
