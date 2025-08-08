@@ -207,7 +207,7 @@ function checksum_verify {
 
 # install_boundary_binary downloads the Boundary binary and puts it in dedicated bin directory
 function install_boundary_binary {
-  local os_arch="$1"
+  local OS_ARCH="$1"
 
   log "INFO" "Installing Boundary binary to: $BOUNDARY_DIR_BIN..."
 	sudo unzip "$${PRODUCT}"_"$${BOUNDARY_VERSION}"_"$${OS_ARCH}".zip  boundary -d $BOUNDARY_DIR_BIN
