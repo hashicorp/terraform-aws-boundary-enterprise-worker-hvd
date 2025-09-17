@@ -12,7 +12,6 @@ BOUNDARY_DIR_LOGS="/var/log/boundary"
 BOUNDARY_DIR_BIN="${boundary_dir_bin}"
 BOUNDARY_USER="boundary"
 BOUNDARY_GROUP="boundary"
-# BOUNDARY_INSTALL_URL="${boundary_install_url}"
 PRODUCT="boundary"
 BOUNDARY_VERSION="${boundary_version}"
 VERSION=$BOUNDARY_VERSION

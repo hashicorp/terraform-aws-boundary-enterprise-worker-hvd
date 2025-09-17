@@ -17,7 +17,6 @@ locals {
     boundary_dir_bin         = "/usr/bin",
     boundary_dir_config      = "/etc/boundary.d",
     boundary_dir_home        = "/opt/boundary",
-    boundary_install_url     = format("https://releases.hashicorp.com/boundary/%s/boundary_%s_linux_amd64.zip", var.boundary_version, var.boundary_version),
     boundary_upstream_ips    = var.boundary_upstream
     boundary_upstream_port   = var.boundary_upstream_port
     hcp_boundary_cluster_id  = var.hcp_boundary_cluster_id
@@ -54,7 +53,6 @@ resource "aws_launch_template" "boundary" {
   instance_type = var.ec2_instance_size
   key_name      = var.ec2_ssh_key_pair
   user_data     = base64gzip(local.user_data_template_rendered)
-  #user_data     = base64encode(templatefile("${path.module}/templates/boundary_custom_data.sh.tpl", local.user_data_args))
 
   iam_instance_profile {
     name = aws_iam_instance_profile.boundary_ec2.name
