@@ -176,7 +176,14 @@ Below are links to docs pages related to deployment customizations and day 2 ope
 - [Upgrading Boundary version](https://github.com/hashicorp/terraform-aws-boundary-enterprise-worker-hvd/blob/main/docs/boundary-version-upgrades.md)
 - [Updating/modifying Boundary configuration settings](https://github.com/hashicorp/terraform-aws-boundary-enterprise-worker-hvd/blob/main/docs/boundary-config-settings.md)
 
-<!-- BEGIN_TF_DOCS -->
+
+## Troubleshooting
+
+During deployment the output of the `user_data` script can be traced in `/var/log/cloud-init.log`, `/var/log/cloud-init-output.log` and `/var/log/vault-cloud-boundary.log` due to `set -xeuo pipefail` in the default  `boundary_custom_data.sh.tpl`
+For help debugging cloud init and user data scripts
+- <https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html#userdata-linux>
+- <https://cloudinit.readthedocs.io/en/latest/howto/debugging.html#cloud-init-ran-but-didn-t-do-what-i-want-it-to>
+
 ## Module support
 
 This open source software is maintained by the HashiCorp Technical Field Organization, independently of our enterprise products. While our Support Engineering team provides dedicated support for our enterprise offerings, this open source software is not included.
@@ -186,6 +193,8 @@ This open source software is maintained by the HashiCorp Technical Field Organiz
 
 Please note that there is no official Service Level Agreement (SLA) for support of this software as a HashiCorp customer. This software falls under the definition of Community Software/Versions in your Agreement. We appreciate your understanding and collaboration in improving our open source projects.
 
+
+<!-- BEGIN_TF_DOCS -->
 ## Requirements
 
 | Name | Version |
@@ -244,6 +253,9 @@ Please note that there is no official Service Level Agreement (SLA) for support 
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_friendly_name_prefix"></a> [friendly\_name\_prefix](#input\_friendly\_name\_prefix) | Friendly name prefix used for uniquely naming AWS resources. This should be unique across all deployments | `string` | n/a | yes |
+| <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | ID of VPC where Boundary will be deployed. | `string` | n/a | yes |
+| <a name="input_worker_subnet_ids"></a> [worker\_subnet\_ids](#input\_worker\_subnet\_ids) | List of subnet IDs to use for the EC2 instance. Unless the workers need to be publicly exposed (example: ingress workers), use private subnets. | `list(string)` | n/a | yes |
 | <a name="input_additional_package_names"></a> [additional\_package\_names](#input\_additional\_package\_names) | List of additional repository package names to install | `set(string)` | `[]` | no |
 | <a name="input_asg_health_check_grace_period"></a> [asg\_health\_check\_grace\_period](#input\_asg\_health\_check\_grace\_period) | The amount of time to wait for a new Boundary EC2 instance to become healthy. If this threshold is breached, the ASG will terminate the instance and launch a new one. | `number` | `300` | no |
 | <a name="input_asg_instance_count"></a> [asg\_instance\_count](#input\_asg\_instance\_count) | Desired number of Boundary EC2 instances to run in Autoscaling Group. Leave at `1` unless Active/Active is enabled. | `number` | `1` | no |
@@ -258,6 +270,7 @@ Please note that there is no official Service Level Agreement (SLA) for support 
 | <a name="input_common_tags"></a> [common\_tags](#input\_common\_tags) | Map of common tags for taggable AWS resources. | `map(string)` | `{}` | no |
 | <a name="input_create_boundary_worker_role"></a> [create\_boundary\_worker\_role](#input\_create\_boundary\_worker\_role) | Boolean to create an IAM role for Boundary Worker EC2 instances. | `bool` | `true` | no |
 | <a name="input_create_lb"></a> [create\_lb](#input\_create\_lb) | Boolean to create a Network Load Balancer for Boundary. Should be true if downstream workers will connect to these workers. | `bool` | `false` | no |
+| <a name="input_custom_install_template"></a> [custom\_install\_template](#input\_custom\_install\_template) | Filename of a custom Install script template to use in place of the built-in user\_data script. The file must exist within a directory named './templates' in your current working directory. | `string` | `null` | no |
 | <a name="input_ebs_iops"></a> [ebs\_iops](#input\_ebs\_iops) | The amount of IOPS to provision for a `gp3` volume. Must be at least `3000`. | `number` | `3000` | no |
 | <a name="input_ebs_is_encrypted"></a> [ebs\_is\_encrypted](#input\_ebs\_is\_encrypted) | Boolean for encrypting the root block device of the Boundary EC2 instance(s). | `bool` | `false` | no |
 | <a name="input_ebs_kms_key_arn"></a> [ebs\_kms\_key\_arn](#input\_ebs\_kms\_key\_arn) | ARN of KMS key to encrypt EC2 EBS volumes. | `string` | `null` | no |
@@ -270,16 +283,13 @@ Please note that there is no official Service Level Agreement (SLA) for support 
 | <a name="input_ec2_os_distro"></a> [ec2\_os\_distro](#input\_ec2\_os\_distro) | Linux OS distribution for Boundary EC2 instance. Choose from `amzn2`, `ubuntu`, `rhel`, `centos`. | `string` | `"ubuntu"` | no |
 | <a name="input_ec2_ssh_key_pair"></a> [ec2\_ssh\_key\_pair](#input\_ec2\_ssh\_key\_pair) | Name of existing SSH key pair to attach to Boundary EC2 instance. | `string` | `""` | no |
 | <a name="input_enable_session_recording"></a> [enable\_session\_recording](#input\_enable\_session\_recording) | Boolean to enable session recording. | `bool` | `false` | no |
-| <a name="input_friendly_name_prefix"></a> [friendly\_name\_prefix](#input\_friendly\_name\_prefix) | Friendly name prefix used for uniquely naming AWS resources. This should be unique across all deployments | `string` | n/a | yes |
 | <a name="input_hcp_boundary_cluster_id"></a> [hcp\_boundary\_cluster\_id](#input\_hcp\_boundary\_cluster\_id) | ID of the Boundary cluster in HCP. Only used when using HCP Boundary. | `string` | `""` | no |
 | <a name="input_kms_endpoint"></a> [kms\_endpoint](#input\_kms\_endpoint) | AWS VPC endpoint for KMS service. | `string` | `""` | no |
 | <a name="input_kms_worker_arn"></a> [kms\_worker\_arn](#input\_kms\_worker\_arn) | KMS ID of the worker-auth kms key. | `string` | `""` | no |
 | <a name="input_lb_is_internal"></a> [lb\_is\_internal](#input\_lb\_is\_internal) | Boolean to create an internal (private) Proxy load balancer. The `lb_subnet_ids` must be private subnets if this is set to `true`. | `bool` | `true` | no |
 | <a name="input_lb_subnet_ids"></a> [lb\_subnet\_ids](#input\_lb\_subnet\_ids) | List of subnet IDs to use for the proxy Network Load Balancer. Unless the lb needs to be publicly exposed (example: downstream Boundary Workers connecting to the ingress workers over the Internet), use private subnets. | `list(string)` | `null` | no |
 | <a name="input_sg_allow_ingress_boundary_9202"></a> [sg\_allow\_ingress\_boundary\_9202](#input\_sg\_allow\_ingress\_boundary\_9202) | List of Security Groups to allow ingress traffic on port 9202 to workers. | `list(string)` | `[]` | no |
-| <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | ID of VPC where Boundary will be deployed. | `string` | n/a | yes |
 | <a name="input_worker_is_internal"></a> [worker\_is\_internal](#input\_worker\_is\_internal) | Boolean to create give the worker an internal IP address only or give it an external IP address. | `bool` | `true` | no |
-| <a name="input_worker_subnet_ids"></a> [worker\_subnet\_ids](#input\_worker\_subnet\_ids) | List of subnet IDs to use for the EC2 instance. Unless the workers need to be publicly exposed (example: ingress workers), use private subnets. | `list(string)` | n/a | yes |
 | <a name="input_worker_tags"></a> [worker\_tags](#input\_worker\_tags) | Map of extra tags to apply to Boundary Worker Configuration. var.common\_tags will be merged with this map. | `map(string)` | `{}` | no |
 
 ## Outputs

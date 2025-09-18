@@ -5,21 +5,22 @@
 # User Data (cloud-init) arguments
 #------------------------------------------------------------------------------
 locals {
-  user_data_args = {
+  custom_install_tpl          = var.custom_install_template != null ? "${path.cwd}/templates/${var.custom_install_template}" : "${path.module}/templates/boundary_custom_data.sh.tpl"
+  user_data_template_rendered = templatefile(local.custom_install_tpl, local.custom_data_args)
+  custom_data_args = {
 
     # https://developer.hashicorp.com/boundary/docs/configuration/worker
 
     # boundary settings
-    boundary_version        = var.boundary_version
-    systemd_dir             = "/etc/systemd/system",
-    boundary_dir_bin        = "/usr/bin",
-    boundary_dir_config     = "/etc/boundary.d",
-    boundary_dir_home       = "/opt/boundary",
-    boundary_install_url    = format("https://releases.hashicorp.com/boundary/%s/boundary_%s_linux_amd64.zip", var.boundary_version, var.boundary_version),
-    boundary_upstream_ips   = var.boundary_upstream
-    boundary_upstream_port  = var.boundary_upstream_port
-    hcp_boundary_cluster_id = var.hcp_boundary_cluster_id
-    worker_is_internal      = var.worker_is_internal
+    boundary_version         = var.boundary_version
+    systemd_dir              = "/etc/systemd/system",
+    boundary_dir_bin         = "/usr/bin",
+    boundary_dir_config      = "/etc/boundary.d",
+    boundary_dir_home        = "/opt/boundary",
+    boundary_upstream_ips    = var.boundary_upstream
+    boundary_upstream_port   = var.boundary_upstream_port
+    hcp_boundary_cluster_id  = var.hcp_boundary_cluster_id
+    worker_is_internal       = var.worker_is_internal
     worker_tags              = lower(replace(jsonencode(merge(var.common_tags, var.worker_tags)), ":", "="))
     enable_session_recording = var.enable_session_recording
     additional_package_names = join(" ", var.additional_package_names)
@@ -51,7 +52,7 @@ resource "aws_launch_template" "boundary" {
   image_id      = coalesce(local.ami_id_list...)
   instance_type = var.ec2_instance_size
   key_name      = var.ec2_ssh_key_pair
-  user_data     = base64encode(templatefile("${path.module}/templates/boundary_custom_data.sh.tpl", local.user_data_args))
+  user_data     = base64gzip(local.user_data_template_rendered)
 
   iam_instance_profile {
     name = aws_iam_instance_profile.boundary_ec2.name

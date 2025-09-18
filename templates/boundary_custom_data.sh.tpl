@@ -7,11 +7,14 @@ BOUNDARY_DIR_CONFIG="${boundary_dir_config}"
 BOUNDARY_CONFIG_PATH="$BOUNDARY_DIR_CONFIG/worker.hcl"
 BOUNDARY_DIR_DATA="${boundary_dir_home}/data"
 BOUNDARY_DIR_BSR="${boundary_dir_home}/bsr"
+BOUNDARY_DIR_LICENSE="${boundary_dir_home}/license"
 BOUNDARY_DIR_LOGS="/var/log/boundary"
 BOUNDARY_DIR_BIN="${boundary_dir_bin}"
 BOUNDARY_USER="boundary"
 BOUNDARY_GROUP="boundary"
-BOUNDARY_INSTALL_URL="${boundary_install_url}"
+PRODUCT="boundary"
+BOUNDARY_VERSION="${boundary_version}"
+VERSION=$BOUNDARY_VERSION
 REQUIRED_PACKAGES="jq unzip"
 ADDITIONAL_PACKAGES="${additional_package_names}"
 AWS_REGION="${aws_region}"
@@ -22,6 +25,29 @@ function log {
   local timestamp=$(date +"%Y-%m-%d %H:%M:%S")
   local log_entry="$timestamp [$level] - $message"
   echo "$log_entry" | tee -a "$LOGFILE"
+}
+
+function detect_architecture {
+  local ARCHITECTURE=""
+  local OS_ARCH_DETECTED=$(uname -m)
+
+  case "$OS_ARCH_DETECTED" in
+    "x86_64"*)
+      ARCHITECTURE="linux_amd64"
+      ;;
+    "aarch64"*)
+      ARCHITECTURE="linux_arm64"
+      ;;
+		"arm"*)
+      ARCHITECTURE="linux_arm"
+			;;
+    *)
+      log "ERROR" "Unsupported architecture detected: '$OS_ARCH_DETECTED'. "
+		  exit_script 1
+  esac
+
+  echo "$ARCHITECTURE"
+
 }
 
 function detect_os_distro {
@@ -61,9 +87,12 @@ function install_prereqs {
     yum install -y $REQUIRED_PACKAGES $ADDITIONAL_PACKAGES
   elif [[ "$OS_DISTRO" == "amzn2023" ]]; then
     yum install -y $REQUIRED_PACKAGES $ADDITIONAL_PACKAGES
+    log "INFO" "Enabling gnupg2-full for Amazon Linux 2023."
+    dnf swap gnupg2-minimal gnupg2-full -y
   else
     log "ERROR" "Unsupported OS distro '$OS_DISTRO'. Exiting."
     exit_script 1
+		;;
   fi
 }
 
@@ -136,19 +165,65 @@ function directory_create {
   log "INFO" "Done creating necessary directories."
 }
 
+function checksum_verify {
+  local OS_ARCH_="$1"
+
+  # https://www.hashicorp.com/en/trust/security
+  # checksum_verify downloads the $${PRODUCT} binary and verifies its integrity
+  log "INFO" "Verifying the integrity of the $${PRODUCT} binary."
+  export GNUPGHOME=./.gnupg
+  log "INFO" "Importing HashiCorp GPG key."
+  sudo curl -s https://www.hashicorp.com/.well-known/pgp-key.txt | gpg --import
+
+	log "INFO" "Downloading $${PRODUCT} binary"
+  sudo curl -Os https://releases.hashicorp.com/"$${PRODUCT}"/"$${VERSION}"/"$${PRODUCT}"_"$${VERSION}"_"$${OS_ARCH}".zip
+	log "INFO" "Downloading $${PRODUCT} Enterprise binary checksum files"
+  sudo curl -Os https://releases.hashicorp.com/"$${PRODUCT}"/"$${VERSION}"/"$${PRODUCT}"_"$${VERSION}"_SHA256SUMS
+	log "INFO" "Downloading $${PRODUCT} Enterprise binary checksum signature file"
+  sudo curl -Os https://releases.hashicorp.com/"$${PRODUCT}"/"$${VERSION}"/"$${PRODUCT}"_"$${VERSION}"_SHA256SUMS.sig
+  log "INFO" "Verifying the signature file is untampered."
+  gpg --verify "$${PRODUCT}"_"$${VERSION}"_SHA256SUMS.sig "$${PRODUCT}"_"$${VERSION}"_SHA256SUMS
+	if [[ $? -ne 0 ]]; then
+		log "ERROR" "Gpg verification failed for SHA256SUMS."
+		exit_script 1
+	fi
+  if [ -x "$(command -v sha256sum)" ]; then
+		log "INFO" "Using sha256sum to verify the checksum of the $${PRODUCT} binary."
+		sha256sum -c "$${PRODUCT}"_"$${VERSION}"_SHA256SUMS --ignore-missing
+	else
+		log "INFO" "Using shasum to verify the checksum of the $${PRODUCT} binary."
+		shasum -a 256 -c "$${PRODUCT}"_"$${VERSION}"_SHA256SUMS --ignore-missing
+	fi
+	if [[ $? -ne 0 ]]; then
+		log "ERROR" "Checksum verification failed for the $${PRODUCT} binary."
+		exit_script 1
+	fi
+
+	log "INFO" "Checksum verification passed for the $${PRODUCT} binary."
+
+	log "INFO" "Removing the downloaded files to clean up"
+	sudo rm -f "$${PRODUCT}"_"$${VERSION}"_SHA256SUMS "$${PRODUCT}"_"$${VERSION}"_SHA256SUMS.sig
+
+}
+
+
 # install_boundary_binary downloads the Boundary binary and puts it in dedicated bin directory
 function install_boundary_binary {
+  local OS_ARCH="$1"
+
   log "INFO" "Installing Boundary binary to: $BOUNDARY_DIR_BIN..."
+	sudo unzip "$${PRODUCT}"_"$${BOUNDARY_VERSION}"_"$${OS_ARCH}".zip  boundary -d $BOUNDARY_DIR_BIN
+	sudo unzip "$${PRODUCT}"_"$${BOUNDARY_VERSION}"_"$${OS_ARCH}".zip -x boundary -d $BOUNDARY_DIR_LICENSE
+	sudo rm -f "$${PRODUCT}"_"$${BOUNDARY_VERSION}"_"$${OS_ARCH}".zip
 
-  # Download the Boundary binary to the dedicated bin directory
-  sudo curl -so $BOUNDARY_DIR_BIN/boundary.zip $BOUNDARY_INSTALL_URL
+	# Set the permissions for the Boundary binary
+	sudo chmod 0755 $BOUNDARY_DIR_BIN/boundary
+	sudo chown $BOUNDARY_USER:$BOUNDARY_GROUP $BOUNDARY_DIR_BIN/boundary
 
-  # Unzip the Boundary binary
-  sudo unzip $BOUNDARY_DIR_BIN/boundary.zip boundary -d $BOUNDARY_DIR_BIN
+	# Create a symlink to the Boundary binary in /usr/local/bin
+	sudo ln -sf $BOUNDARY_DIR_BIN/boundary /usr/local/bin/boundary
 
-  sudo rm $BOUNDARY_DIR_BIN/boundary.zip
-
-  log "INFO" "Done installing Boundary binary."
+	log "INFO" "Boundary binary installed successfully at $BOUNDARY_DIR_BIN/boundary"
 }
 
 function generate_boundary_config {
@@ -287,12 +362,17 @@ function main {
 
   OS_DISTRO=$(detect_os_distro)
   log "INFO" "Detected Linux OS distro is '$OS_DISTRO'."
+	OS_ARCH=$(detect_architecture)
+  log "INFO" "Detected Linux OS architecture is '$OS_ARCH'."
   scrape_vm_info
   install_prereqs "$OS_DISTRO"
   install_awscli "$OS_DISTRO"
   user_group_create
   directory_create
-  install_boundary_binary
+	checksum_verify "$OS_ARCH"
+	log "INFO" "Checksum verification passed for the Boundary binary."
+  install_boundary_binary "$OS_ARCH"
+	log "INFO" "Boundary binary installed successfully."
   generate_boundary_config
   template_boundary_systemd
   start_enable_boundary
