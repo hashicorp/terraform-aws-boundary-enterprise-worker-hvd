@@ -92,7 +92,6 @@ function install_prereqs {
   else
     log "ERROR" "Unsupported OS distro '$OS_DISTRO'. Exiting."
     exit_script 1
-		;;
   fi
 }
 
