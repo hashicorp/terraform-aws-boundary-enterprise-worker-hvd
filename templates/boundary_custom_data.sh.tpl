@@ -133,7 +133,7 @@ function scrape_vm_info {
   VM_NAME=$(curl -sS -H "X-aws-ec2-metadata-token: $EC2_TOKEN" http://169.254.169.254/latest/meta-data/instance-id)
   log "INFO" "Detected EC2 instance private IP address is '$VM_PRIVATE_IP'."
   log "INFO" "Detected EC2 instance public IP address is '$VM_PUBLIC_IP'."
-  log "INFO" "Detected EC2 instance name is '$VM_NAME'."
+  log "INFO" "Detected EC2 instance ID is '$VM_NAME'."
 }
 
 # user_create creates a dedicated linux user for Boundary
