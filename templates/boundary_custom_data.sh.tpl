@@ -231,9 +231,6 @@ function install_boundary_binary {
 function generate_boundary_config {
   log "INFO" "Generating $BOUNDARY_CONFIG_PATH file."
 
-  declare -l host
-  host=$(hostname -s)
-
   if [[ ${worker_is_internal} == "true" ]]; then
     addr=($VM_PRIVATE_IP)
   else
