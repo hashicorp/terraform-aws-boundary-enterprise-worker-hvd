@@ -126,7 +126,7 @@ function install_awscli {
 }
 
 function scrape_vm_info {
-  log "INFO" "Scraping EC2 instance metadata for private IP address..."
+  log "INFO" "Scraping EC2 instance metadata ..."
   EC2_TOKEN=$(curl -sS -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
   VM_PRIVATE_IP=$(curl -sS -H "X-aws-ec2-metadata-token: $EC2_TOKEN" http://169.254.169.254/latest/meta-data/local-ipv4)
   VM_PUBLIC_IP=$(curl -sS -H "X-aws-ec2-metadata-token: $EC2_TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4)
