@@ -253,7 +253,7 @@ worker {
 %{ endif ~}
 
 %{ if worker_kms_id != "" ~}
-  # Name is mandatory for worker KMS auth
+  # Worker name (set from $VM_NAME, typically the EC2 instance-id) is mandatory for worker KMS auth
   name = "$VM_NAME"
 %{ else ~}
   # Auth storage backend is always required unless it's KMS auth
