@@ -126,11 +126,14 @@ function install_awscli {
 }
 
 function scrape_vm_info {
-  log "INFO" "Scraping EC2 instance metadata for private IP address..."
+  log "INFO" "Scraping EC2 instance metadata ..."
   EC2_TOKEN=$(curl -sS -X PUT "http://169.254.169.254/latest/api/token" -H "X-aws-ec2-metadata-token-ttl-seconds: 21600")
   VM_PRIVATE_IP=$(curl -sS -H "X-aws-ec2-metadata-token: $EC2_TOKEN" http://169.254.169.254/latest/meta-data/local-ipv4)
   VM_PUBLIC_IP=$(curl -sS -H "X-aws-ec2-metadata-token: $EC2_TOKEN" http://169.254.169.254/latest/meta-data/public-ipv4)
+  VM_NAME=$(curl -sS -H "X-aws-ec2-metadata-token: $EC2_TOKEN" http://169.254.169.254/latest/meta-data/instance-id)
   log "INFO" "Detected EC2 instance private IP address is '$VM_PRIVATE_IP'."
+  log "INFO" "Detected EC2 instance public IP address is '$VM_PUBLIC_IP'."
+  log "INFO" "Detected EC2 instance ID is '$VM_NAME'."
 }
 
 # user_create creates a dedicated linux user for Boundary
@@ -228,9 +231,6 @@ function install_boundary_binary {
 function generate_boundary_config {
   log "INFO" "Generating $BOUNDARY_CONFIG_PATH file."
 
-  declare -l host
-  host=$(hostname -s)
-
   if [[ ${worker_is_internal} == "true" ]]; then
     addr=($VM_PRIVATE_IP)
   else
@@ -242,15 +242,21 @@ worker {
   public_addr = "$addr"
 
 %{ if hcp_boundary_cluster_id == "" ~}
-  name = "$host"
-  initial_upstreams = [
+   initial_upstreams = [
 %{ for ip in formatlist("%s",boundary_upstream_ips) ~}
   "${ip}:${boundary_upstream_port}",
 %{ endfor ~}
   ]
+%{ endif ~}
+
+%{ if worker_kms_id != "" ~}
+  # Worker name (set from $VM_NAME, typically the EC2 instance-id) is mandatory for worker KMS auth
+  name = "$VM_NAME"
 %{ else ~}
+  # Auth storage backend is always required unless it's KMS auth
   auth_storage_path = "$BOUNDARY_DIR_DATA"
 %{ endif ~}
+
 
 %{ if enable_session_recording ~}
   recording_storage_path="$BOUNDARY_DIR_BSR"
