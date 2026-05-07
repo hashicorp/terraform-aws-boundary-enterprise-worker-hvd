@@ -8,9 +8,9 @@ on:
     types: [created]
 
 permissions:
-  contents: read
-  issues: write
-  pull-requests: write
+  contents: read 
+  pull-requests: read
+  issues: read
 
 jobs:
   sync:
