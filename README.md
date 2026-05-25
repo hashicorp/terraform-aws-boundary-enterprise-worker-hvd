@@ -198,20 +198,20 @@ Please note that there is no official Service Level Agreement (SLA) for support 
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.51.0 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 6.46.0 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.51.0 |
+| ---- | ------- |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | >= 6.46.0 |
 
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_autoscaling_group.boundary](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/autoscaling_group) | resource |
 | [aws_iam_instance_profile.boundary_ec2](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_instance_profile) | resource |
 | [aws_iam_role.boundary_ec2](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
@@ -252,7 +252,7 @@ Please note that there is no official Service Level Agreement (SLA) for support 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_friendly_name_prefix"></a> [friendly\_name\_prefix](#input\_friendly\_name\_prefix) | Friendly name prefix used for uniquely naming AWS resources. This should be unique across all deployments | `string` | n/a | yes |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | ID of VPC where Boundary will be deployed. | `string` | n/a | yes |
 | <a name="input_worker_subnet_ids"></a> [worker\_subnet\_ids](#input\_worker\_subnet\_ids) | List of subnet IDs to use for the EC2 instance. Unless the workers need to be publicly exposed (example: ingress workers), use private subnets. | `list(string)` | n/a | yes |
@@ -262,7 +262,7 @@ Please note that there is no official Service Level Agreement (SLA) for support 
 | <a name="input_asg_max_size"></a> [asg\_max\_size](#input\_asg\_max\_size) | Max number of Boundary EC2 instances to run in Autoscaling Group. | `number` | `3` | no |
 | <a name="input_boundary_upstream"></a> [boundary\_upstream](#input\_boundary\_upstream) | List of IP addresses or FQDNs for the worker to initially connect to. This could be a controller or worker. This is not used when connecting to HCP Boundary. | `list(string)` | `null` | no |
 | <a name="input_boundary_upstream_port"></a> [boundary\_upstream\_port](#input\_boundary\_upstream\_port) | Port for the worker to connect to. Typically 9201 to connect to a controller, 9202 to a worker. | `number` | `9202` | no |
-| <a name="input_boundary_version"></a> [boundary\_version](#input\_boundary\_version) | Version of Boundary to install. | `string` | `"0.17.1+ent"` | no |
+| <a name="input_boundary_version"></a> [boundary\_version](#input\_boundary\_version) | Version of Boundary to install. | `string` | `"0.21.3+ent"` | no |
 | <a name="input_boundary_worker_iam_role_name"></a> [boundary\_worker\_iam\_role\_name](#input\_boundary\_worker\_iam\_role\_name) | Existing IAM Role to use for the Boundary Worker EC2 instances. This must be provided if `create_boundary_worker_role` is set to `false`. | `string` | `null` | no |
 | <a name="input_bsr_s3_bucket_arn"></a> [bsr\_s3\_bucket\_arn](#input\_bsr\_s3\_bucket\_arn) | Arn of the S3 bucket used to store Boundary session recordings. | `string` | `null` | no |
 | <a name="input_cidr_allow_ingress_boundary_9202"></a> [cidr\_allow\_ingress\_boundary\_9202](#input\_cidr\_allow\_ingress\_boundary\_9202) | List of CIDR ranges to allow ingress traffic on port 9202 to workers. | `list(string)` | `null` | no |
@@ -295,7 +295,7 @@ Please note that there is no official Service Level Agreement (SLA) for support 
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_boundary_worker_iam_role_name"></a> [boundary\_worker\_iam\_role\_name](#output\_boundary\_worker\_iam\_role\_name) | Name of the IAM role for Boundary Worker instances. |
 | <a name="output_proxy_lb_dns_name"></a> [proxy\_lb\_dns\_name](#output\_proxy\_lb\_dns\_name) | DNS name of the Load Balancer. |
 <!-- END_TF_DOCS -->
