@@ -17,7 +17,7 @@ common_tags = {
 boundary_version         = "<0.17.1+ent>"
 worker_is_internal       = <true>
 enable_session_recording = <false>
-hcp_boundary_cluster_id  = "<id>" #Also known as Cluster URL - Should be FQDM format, e.g. https://e1243d2d-b1f1-66c3-a4da-b4f2fec3010b.boundary.hashicorp.cloud
+hcp_boundary_cluster_id  = "<id>" #Also known as Cluster name - The name shown in the HCP Boundary Cluster Admin UI at the top
 worker_tags = {
   bsr = "enabled"
 }
