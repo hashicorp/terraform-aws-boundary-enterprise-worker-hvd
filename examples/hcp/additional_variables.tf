@@ -1,4 +1,4 @@
-# Copyright IBM Corp. 2024, 2025
+# Copyright IBM Corp. 2024, 2025, 2026
 # SPDX-License-Identifier: MPL-2.0
 
 #------------------------------------------------------------------------------
@@ -6,6 +6,6 @@
 #------------------------------------------------------------------------------
 variable "region" {
   type        = string
-  description = "AWS region where TFE will be deployed."
-  default     = "us-east-1"
+  description = "AWS region where Boundary will be deployed."
+  default     = "us-east-2"
 }

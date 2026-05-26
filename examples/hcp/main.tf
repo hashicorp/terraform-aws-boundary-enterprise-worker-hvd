@@ -1,4 +1,4 @@
-# Copyright IBM Corp. 2024, 2025
+# Copyright IBM Corp. 2024, 2025, 2026
 # SPDX-License-Identifier: MPL-2.0
 
 terraform {
@@ -23,7 +23,7 @@ module "boundary" {
 
   # Boundary configuration settings
   boundary_version              = var.boundary_version
-  boundary_upstream             = var.boundary_upstream
+  # boundary_upstream             = var.boundary_upstream # This variable is not used in the HCP example, but is left here for reference. The module will automatically determine the upstream based on the presence of a cluster ID or not. 
   boundary_upstream_port        = var.boundary_upstream_port
   kms_worker_arn                = var.kms_worker_arn
   worker_is_internal            = var.worker_is_internal

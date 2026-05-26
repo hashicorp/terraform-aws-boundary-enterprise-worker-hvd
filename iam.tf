@@ -1,4 +1,4 @@
-# Copyright IBM Corp. 2024, 2025
+# Copyright IBM Corp. 2024, 2025, 2026
 # SPDX-License-Identifier: MPL-2.0
 
 data "aws_iam_role" "boundary_ec2" {
@@ -80,13 +80,23 @@ data "aws_iam_policy_document" "ec2_allow_ebs_kms_cmk" {
   }
 }
 
+data "aws_iam_policy_document" "empty" {
+  statement {
+    sid    = "EmptyPolicy"
+    effect = "Allow"
+    actions = ["none:null"]
+    resources = ["*"]
+  }
+}
+
 data "aws_iam_policy_document" "combined" {
   count = var.create_boundary_worker_role ? 1 : 0
 
   source_policy_documents = [
     var.kms_worker_arn != "" ? data.aws_iam_policy_document.boundary_kms[0].json : "",
     var.enable_session_recording ? data.aws_iam_policy_document.boundary_session_recording_kms[0].json : "",
-    var.ebs_kms_key_arn != null ? data.aws_iam_policy_document.ec2_allow_ebs_kms_cmk[0].json : ""
+    var.ebs_kms_key_arn != null ? data.aws_iam_policy_document.ec2_allow_ebs_kms_cmk[0].json : "",
+    var.kms_worker_arn == "" && !var.enable_session_recording && var.ebs_kms_key_arn == null ? data.aws_iam_policy_document.empty.json : ""
   ]
 }
 

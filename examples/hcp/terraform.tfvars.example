@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MPL-2.0
 
 # --- Provider --- #
-region = "us-east-1"
+region = "us-east-2"
 
 # ---Common --- #
 friendly_name_prefix = "<acme-hcp>" #This should be unique across all deployments
@@ -16,8 +16,8 @@ common_tags = {
 # ---Boundary configuration settings --- #
 boundary_version         = "<0.17.1+ent>"
 worker_is_internal       = <true>
-enable_session_recording = <true>
-hcp_boundary_cluster_id  = "<id>"
+enable_session_recording = <false>
+hcp_boundary_cluster_id  = "<id>" #Also known as Cluster URL - Should be FQDM format, e.g. https://e1243d2d-b1f1-66c3-a4da-b4f2fec3010b.boundary.hashicorp.cloud
 worker_tags = {
   bsr = "enabled"
 }
@@ -30,7 +30,8 @@ cidr_allow_ingress_ec2_ssh       = ["<10.0.0.0/16>"]
 create_lb                        = <false>
 
 # --- IAM --- #
-create_boundary_worker_role              = <true>
+create_boundary_worker_role              = <true> # If set to false, you must provide an existing AWS boundary worker role name in the variable below
+boundary_worker_iam_role_name            = <null>
 
 # --- S3 --- #
 bsr_s3_bucket_arn = "<existing-bucket-arn>"
