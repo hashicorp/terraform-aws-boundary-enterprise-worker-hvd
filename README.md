@@ -164,9 +164,11 @@ Unless deploying a Boundary HCP Worker, you will require a Boundary Enterprise C
 
 1. While still connected to the Boundary Worker, `sudo journalctl -xu boundary` to review the Boundary Logs.
 
-1. Copy the `Worker Auth Registration Request` string and paste this into the `Worker Auth Registration Request` field of the new Boundary Worker in the HCP console and click `Register Worker`.
+1. Locate the generated HCP worker authorization registration request token at the default location of `/opt/boundary/data/auth_request_token` and copy the string.
 
-1. Worker should show up in HCP Boundary console
+1. Follow the instructions for adding a worker using the generated token via either the HCP Admin UI or via the Boundary CLI, found here: https://developer.hashicorp.com/boundary/tutorials/hcp-administration/hcp-manage-workers#register-the-worker-with-hcp
+
+1. Worker should now show up in HCP Boundary admin console and in the list returned from the Boundary CLI command `boundary workers list`.
 
 ## Docs
 
@@ -180,9 +182,10 @@ Below are links to docs pages related to deployment customizations and day 2 ope
 ## Troubleshooting
 
 During deployment the output of the `user_data` script can be traced in `/var/log/cloud-init.log`, `/var/log/cloud-init-output.log` and `/var/log/vault-cloud-boundary.log` due to `set -xeuo pipefail` in the default  `boundary_custom_data.sh.tpl`
-For help debugging cloud init and user data scripts
+For help debugging cloud init, user data scripts, and boundary issues, see:
 - <https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/user-data.html#userdata-linux>
 - <https://cloudinit.readthedocs.io/en/latest/howto/debugging.html#cloud-init-ran-but-didn-t-do-what-i-want-it-to>
+- <https://support.hashicorp.com/hc/en-us/articles/14398866932243-Where-are-My-Boundary-Logs-and-How-do-I-Share-Them-with-HashiCorp-Support>
 
 ## Module support
 
