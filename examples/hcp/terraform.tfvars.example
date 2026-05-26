@@ -22,6 +22,9 @@ worker_tags = {
   bsr = "enabled"
 }
 
+# --- EC2 --- #
+ec2_instance_size = <m5.2xlarge> #For production, m5.2xlarge is recommended. Can change to smaller instance for testing, e.g., t2.micro
+
 # --- Networking --- #
 vpc_id                           = "<my-vpc-id>"
 worker_subnet_ids                = ["<my-worker-subnet-id-a>", "<my-worker-subnet-id-b>", "<my-worker-subnet-id-c>"]
