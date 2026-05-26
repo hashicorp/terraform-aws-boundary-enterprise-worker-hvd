@@ -17,7 +17,7 @@ common_tags = {
 boundary_version         = "<0.17.1+ent>"
 worker_is_internal       = <true>
 enable_session_recording = <false>
-hcp_boundary_cluster_id  = "<id>" #Also known as Cluster name - The name shown in the HCP Boundary Cluster Admin UI at the top
+hcp_boundary_cluster_id  = "<id>" # The cluster ID is the top-most subdomain portion of the FQDN Cluster URL, e.g., if the cluster URL in the HCP Boundary admin UI is https://e9842b6b-b2b4-51c2-c4aa-b7c4dea9810c.boundary.hashicorp.cloud/ the cluster ID is e9842b6b-b2b4-51c2-c4aa-b7c4dea9810c
 worker_tags = {
   bsr = "enabled"
 }
