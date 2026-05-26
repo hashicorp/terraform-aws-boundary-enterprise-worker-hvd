@@ -44,6 +44,7 @@ module "boundary" {
   ec2_os_distro      = var.ec2_os_distro
   ec2_ssh_key_pair   = var.ec2_ssh_key_pair
   asg_instance_count = var.asg_instance_count
+  ec2_instance_size  = var.ec2_instance_size
 
   #IAM
   ec2_allow_ssm     = var.ec2_allow_ssm
