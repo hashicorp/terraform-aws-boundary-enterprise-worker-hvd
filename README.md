@@ -164,7 +164,7 @@ Unless deploying a Boundary HCP Worker, you will require a Boundary Enterprise C
 
 1. While still connected to the Boundary Worker, `sudo journalctl -xu boundary` to review the Boundary Logs.
 
-1. Locate the generated HCP worker authorization registration request token at the default location of `/opt/boundary/data/auth_request_token` and copy the string.
+1. Locate the generated HCP worker authorization registration request token at the default location of `/opt/boundary/data/auth_request_token` and copy the string.  This token can only be used once and the file is deleted as soon as the worker connects with the upstream server.  If you need a new token (e.g., you register the worker, and then delete it, and then want to re-register it again), stop the boundary worker server service with `sudo systemctl stop boundary.service`, delete the auth credential file `/opt/boundary/data/nodecreds/current`, and then restart the boundary worker server service with `sudo systemctl start boundary.service`.  A new one-time-use auth_request_token will be generated at the above default location and a new auth credential file will be generated after the worker successfully connects to the upstream server, as before.
 
 1. Follow the instructions for adding a worker using the generated token via either the HCP Admin UI or via the Boundary CLI, found here: https://developer.hashicorp.com/boundary/tutorials/hcp-administration/hcp-manage-workers#register-the-worker-with-hcp
 
