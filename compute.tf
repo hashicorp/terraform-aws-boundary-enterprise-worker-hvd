@@ -26,7 +26,7 @@ locals {
     additional_package_names = join(" ", var.additional_package_names)
 
     # KMS settings
-    worker_kms_id = var.kms_worker_arn != "" ? data.aws_kms_key.worker[0].id : ""
+    worker_kms_id = var.kms_worker_arn != "" && var.kms_worker_arn != null ? data.aws_kms_key.worker[0].id : ""
     kms_endpoint  = var.kms_endpoint
     aws_region    = data.aws_region.current.name
   }

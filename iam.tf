@@ -22,7 +22,7 @@ data "aws_iam_policy_document" "assume_role_policy" {
 }
 
 data "aws_iam_policy_document" "boundary_kms" {
-  count = var.create_boundary_worker_role && var.kms_worker_arn != "" ? 1 : 0
+  count = var.create_boundary_worker_role && var.kms_worker_arn != "" && var.kms_worker_arn != null ? 1 : 0
 
   statement {
     sid    = "BoundaryKMSKey"
@@ -93,10 +93,10 @@ data "aws_iam_policy_document" "combined" {
   count = var.create_boundary_worker_role ? 1 : 0
 
   source_policy_documents = [
-    var.kms_worker_arn != "" ? data.aws_iam_policy_document.boundary_kms[0].json : "",
+    var.kms_worker_arn != "" && var.kms_worker_arn != null ? data.aws_iam_policy_document.boundary_kms[0].json : "",
     var.enable_session_recording ? data.aws_iam_policy_document.boundary_session_recording_kms[0].json : "",
     var.ebs_kms_key_arn != null ? data.aws_iam_policy_document.ec2_allow_ebs_kms_cmk[0].json : "",
-    var.kms_worker_arn == "" && !var.enable_session_recording && var.ebs_kms_key_arn == null ? data.aws_iam_policy_document.empty.json : ""
+    (var.kms_worker_arn == "" || var.kms_endpoint == null) && !var.enable_session_recording && var.ebs_kms_key_arn == null ? data.aws_iam_policy_document.empty.json : ""
   ]
 }
 

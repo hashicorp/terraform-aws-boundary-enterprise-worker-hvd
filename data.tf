@@ -122,7 +122,7 @@ data "aws_ami" "amzn2" {
 # KMS data sources
 #------------------------------------------------------------------------------
 data "aws_kms_key" "worker" {
-  count = var.kms_worker_arn != "" ? 1 : 0
+  count = var.kms_worker_arn != "" && var.kms_worker_arn != null ? 1 : 0
 
   key_id = var.kms_worker_arn
 }

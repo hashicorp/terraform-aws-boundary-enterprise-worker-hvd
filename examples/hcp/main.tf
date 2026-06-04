@@ -22,16 +22,19 @@ module "boundary" {
   common_tags          = var.common_tags
 
   # Boundary configuration settings
-  boundary_version              = var.boundary_version
-  # boundary_upstream             = var.boundary_upstream # This variable is not used in the HCP example, but is left here for reference. The module will automatically determine the upstream based on the presence of a cluster ID or not. 
-  boundary_upstream_port        = var.boundary_upstream_port
-  kms_worker_arn                = var.kms_worker_arn
-  worker_is_internal            = var.worker_is_internal
-  enable_session_recording      = var.enable_session_recording
-  boundary_worker_iam_role_name = var.boundary_worker_iam_role_name
-  create_boundary_worker_role   = var.create_boundary_worker_role
-  worker_tags                   = var.worker_tags
-  hcp_boundary_cluster_id       = var.hcp_boundary_cluster_id
+  boundary_version                      = var.boundary_version
+  # boundary_upstream                   = var.boundary_upstream # This variable is not used in the HCP example, but is left here for reference. The module will automatically determine the upstream based on the presence of a cluster ID or not. 
+  boundary_upstream_port                = var.boundary_upstream_port
+  worker_registration_method            = var.worker_registration_method
+  kms_worker_arn                        = var.kms_worker_arn
+  kms_endpoint                          = var.kms_endpoint
+  controller_generated_activation_token = var.controller_generated_activation_token
+  worker_is_internal                    = var.worker_is_internal
+  enable_session_recording              = var.enable_session_recording
+  boundary_worker_iam_role_name         = var.boundary_worker_iam_role_name
+  create_boundary_worker_role           = var.create_boundary_worker_role
+  worker_tags                           = var.worker_tags
+  hcp_boundary_cluster_id               = var.hcp_boundary_cluster_id
 
   # Networking
   vpc_id                           = var.vpc_id
