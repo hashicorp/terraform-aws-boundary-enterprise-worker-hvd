@@ -125,6 +125,7 @@ Unless deploying a Boundary HCP Worker, you will require a Boundary Enterprise C
               ├── backend.tf
               ├── main.tf
               ├── outputs.tf
+              ├── terraform.tfvars
               ├── variables.tf
               └── variables_provider.tf
     ```
