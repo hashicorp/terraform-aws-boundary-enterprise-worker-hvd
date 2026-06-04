@@ -6,6 +6,6 @@
 #------------------------------------------------------------------------------
 variable "region" {
   type        = string
-  description = "AWS region where TFE will be deployed."
+  description = "AWS region for resource deployment."
   default     = "us-east-1"
 }
