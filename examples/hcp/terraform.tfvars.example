@@ -23,7 +23,7 @@ worker_tags = {
 }
 
 # --- EC2 --- #
-ec2_instance_size = <m5.2xlarge> #For production, m5.2xlarge is recommended. Can change to smaller instance for testing, e.g., t2.micro
+ec2_instance_size = "<m5.2xlarge>" #For production, m5.2xlarge is recommended. Can change to smaller instance for testing, e.g., t2.micro
 
 # --- Networking --- #
 vpc_id                           = "<my-vpc-id>"

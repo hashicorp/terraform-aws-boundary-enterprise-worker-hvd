@@ -52,6 +52,10 @@ variable "hcp_boundary_cluster_id" {
     condition     = var.hcp_boundary_cluster_id != "" ? var.boundary_upstream == null : true
     error_message = "HCP Boundary cluster ID must be provided when `boundary_upstream` is not provided."
   }
+  validation {
+    condition     = var.hcp_boundary_cluster_id == "" || can(regex("^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$", var.hcp_boundary_cluster_id))
+    error_message = "HCP Boundary cluster ID must be a valid UUID."
+  }
 }
 
 variable "kms_worker_arn" {
