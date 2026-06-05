@@ -12,18 +12,21 @@ locals {
     # https://developer.hashicorp.com/boundary/docs/configuration/worker
 
     # boundary settings
-    boundary_version         = var.boundary_version
-    systemd_dir              = "/etc/systemd/system",
-    boundary_dir_bin         = "/usr/bin",
-    boundary_dir_config      = "/etc/boundary.d",
-    boundary_dir_home        = "/opt/boundary",
-    boundary_upstream_ips    = var.boundary_upstream
-    boundary_upstream_port   = var.boundary_upstream_port
-    hcp_boundary_cluster_id  = var.hcp_boundary_cluster_id
-    worker_is_internal       = var.worker_is_internal
-    worker_tags              = lower(replace(jsonencode(merge(var.common_tags, var.worker_tags)), ":", "="))
-    enable_session_recording = var.enable_session_recording
-    additional_package_names = join(" ", var.additional_package_names)
+    boundary_version                      = var.boundary_version
+    systemd_dir                           = "/etc/systemd/system",
+    boundary_dir_bin                      = "/usr/bin",
+    boundary_dir_config                   = "/etc/boundary.d",
+    boundary_dir_home                     = "/opt/boundary",
+    boundary_upstream_ips                 = var.boundary_upstream
+    boundary_upstream_port                = var.boundary_upstream_port
+    worker_registration_method            = var.worker_registration_method
+    kms_worker_arn                        = var.kms_worker_arn
+    controller_generated_activation_token = var.controller_generated_activation_token
+    hcp_boundary_cluster_id               = var.hcp_boundary_cluster_id
+    worker_is_internal                    = var.worker_is_internal
+    worker_tags                           = lower(replace(jsonencode(merge(var.common_tags, var.worker_tags)), ":", "="))
+    enable_session_recording              = var.enable_session_recording
+    additional_package_names              = join(" ", var.additional_package_names)
 
     # KMS settings
     worker_kms_id = var.kms_worker_arn != "" && var.kms_worker_arn != null ? data.aws_kms_key.worker[0].id : ""

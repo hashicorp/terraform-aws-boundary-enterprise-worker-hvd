@@ -112,7 +112,7 @@ resource "aws_iam_instance_profile" "boundary_ec2" {
 
   name = "${var.friendly_name_prefix}-boundary-worker-instance-profile-${data.aws_region.current.name}"
   path = "/"
-  role = var.boundary_worker_iam_role_name == null ? aws_iam_role.boundary_ec2[0].name : data.aws_iam_role.boundary_ec2[0].name
+  role = var.boundary_worker_iam_role_name == null || var.boundary_worker_iam_role_name == "" ? aws_iam_role.boundary_ec2[0].name : data.aws_iam_role.boundary_ec2[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "aws_ssm" {
