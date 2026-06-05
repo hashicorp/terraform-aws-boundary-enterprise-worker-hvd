@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MPL-2.0
 
 # --- Provider --- #
-region = "us-east-1"
+region = "<us-east-1>"
 
 # ---Common --- #
 friendly_name_prefix = "<acme-egress>" #This should be unique across all deployments
@@ -21,7 +21,7 @@ worker_is_internal       = <true>
 kms_worker_arn           = "<kms-worker-arn>"
 enable_session_recording = true
 worker_tags = {
-  <bsr> = <"enabled">
+  <bsr> = "<enabled>"
 }
 
 # --- Networking --- #
@@ -33,7 +33,7 @@ create_lb                        = <false>
 
 # --- Compute --- #
 asg_instance_count = <1>
-ec2_ssh_key_pair   = <"my-ec2-ssh-key-pair">
+ec2_ssh_key_pair   = "<my-ec2-ssh-key-pair>"
 ec2_allow_ssm      = <true>
 
 # --- S3 --- #
