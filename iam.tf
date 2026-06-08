@@ -103,14 +103,14 @@ data "aws_iam_policy_document" "combined" {
 resource "aws_iam_role_policy" "boundary_ec2" {
   count = var.create_boundary_worker_role ? 1 : 0
 
-  name   = "${var.friendly_name_prefix}-boundary-worker-instance-role-policy-${data.aws_region.current.name}"
+  name   = "${var.friendly_name_prefix}-boundary-worker-instance-role-policy-${data.aws_region.current.region}"
   role   = aws_iam_role.boundary_ec2[0].id
   policy = data.aws_iam_policy_document.combined[0].json
 }
 
 resource "aws_iam_instance_profile" "boundary_ec2" {
 
-  name = "${var.friendly_name_prefix}-boundary-worker-instance-profile-${data.aws_region.current.name}"
+  name = "${var.friendly_name_prefix}-boundary-worker-instance-profile-${data.aws_region.current.region}"
   path = "/"
   role = var.boundary_worker_iam_role_name == null || var.boundary_worker_iam_role_name == "" ? aws_iam_role.boundary_ec2[0].name : data.aws_iam_role.boundary_ec2[0].name
 }
@@ -125,7 +125,7 @@ resource "aws_iam_role_policy_attachment" "aws_ssm" {
 resource "aws_iam_role" "boundary_ec2" {
   count = var.create_boundary_worker_role ? 1 : 0
 
-  name               = "${var.friendly_name_prefix}-boundary-worker-instance-role-${data.aws_region.current.name}"
+  name               = "${var.friendly_name_prefix}-boundary-worker-instance-role-${data.aws_region.current.region}"
   path               = "/"
   assume_role_policy = data.aws_iam_policy_document.assume_role_policy[0].json
 

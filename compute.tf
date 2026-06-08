@@ -20,7 +20,6 @@ locals {
     boundary_upstream_ips                 = var.boundary_upstream
     boundary_upstream_port                = var.boundary_upstream_port
     worker_registration_method            = var.worker_registration_method
-    kms_worker_arn                        = var.kms_worker_arn
     controller_generated_activation_token = var.controller_generated_activation_token
     hcp_boundary_cluster_id               = var.hcp_boundary_cluster_id
     worker_is_internal                    = var.worker_is_internal
@@ -29,9 +28,10 @@ locals {
     additional_package_names              = join(" ", var.additional_package_names)
 
     # KMS settings
-    worker_kms_id = var.kms_worker_arn != "" && var.kms_worker_arn != null ? data.aws_kms_key.worker[0].id : ""
-    kms_endpoint  = var.kms_endpoint
-    aws_region    = data.aws_region.current.name
+    kms_worker_arn                        = var.kms_worker_arn
+    kms_worker_id                         = var.worker_registration_method == "kms-led"? data.aws_kms_key.worker[0].id : ""
+    kms_endpoint                          = var.kms_endpoint
+    aws_region                            = data.aws_region.current.region
   }
 }
 

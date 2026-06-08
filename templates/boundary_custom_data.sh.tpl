@@ -12,6 +12,10 @@ BOUNDARY_DIR_LOGS="/var/log/boundary"
 BOUNDARY_DIR_BIN="${boundary_dir_bin}"
 BOUNDARY_USER="boundary"
 BOUNDARY_GROUP="boundary"
+CONTROLLER_GENERATED_ACTIVATION_TOKEN="${controller_generated_activation_token}"
+KMS_WORKER_ARN="${kms_worker_arn}"
+KMS_WORKER_ID="${kms_worker_id}"
+KMS_ENDPOINT="${kms_endpoint}"
 PRODUCT="boundary"
 BOUNDARY_VERSION="${boundary_version}"
 VERSION=$BOUNDARY_VERSION
@@ -238,36 +242,42 @@ function generate_boundary_config {
   fi
 
   cat >$BOUNDARY_CONFIG_PATH <<EOF
+
 worker {
   public_addr = "$addr"
 
-%{ if hcp_boundary_cluster_id == "" ~}
-   initial_upstreams = [
-%{ for ip in formatlist("%s",boundary_upstream_ips) ~}
-  "${ip}:${boundary_upstream_port}",
-%{ endfor ~}
-  ]
-%{ endif ~}
+  %{ if hcp_boundary_cluster_id == "" ~}
+    initial_upstreams = [
+    %{ for ip in formatlist("%s",boundary_upstream_ips) ~}
+      "${ip}:${boundary_upstream_port}",
+    %{ endfor ~}
+    ]
+  %{ endif ~}
 
-%{ if worker_kms_id != "" ~}
-  # Worker name (set from $VM_NAME, typically the EC2 instance-id) is mandatory for worker KMS auth
-  name = "$VM_NAME"
-%{ else ~}
-  # Auth storage backend is always required unless it's KMS auth
-  auth_storage_path = "$BOUNDARY_DIR_DATA"
-%{ endif ~}
+  %{ if worker_registration_method == "kms_led" ~}
+    # Worker name (set from $VM_NAME, typically the EC2 instance-id) is mandatory for worker KMS auth
+    name = "$VM_NAME"
+  %{ else ~}
+    a# Auth storage backend is always required unless it's KMS auth
+    auth_storage_path = "$BOUNDARY_DIR_DATA"
+  %{ endif ~}
 
+  %{ if enable_session_recording ~}
+    recording_storage_path="$BOUNDARY_DIR_BSR"
+    recording_storage_minimum_available_capacity="500MB"
+  %{ endif ~}
 
-%{ if enable_session_recording ~}
-  recording_storage_path="$BOUNDARY_DIR_BSR"
-  recording_storage_minimum_available_capacity="500MB"
-%{ endif ~}
+  %{ if worker_registration_method == "controller-led" ~}
+  # This token is single use so is ok to leave in the config file in plain text.
+    controller_generated_activation_token = "$CONTROLLER_GENERATED_ACTIVATION_TOKEN"
+  %{ endif ~}
 
-tags ${worker_tags}
+  tags ${worker_tags}
+
 }
 
 %{ if hcp_boundary_cluster_id != "" ~}
-hcp_boundary_cluster_id = "${hcp_boundary_cluster_id}"
+  hcp_boundary_cluster_id = "${hcp_boundary_cluster_id}"
 %{ endif ~}
 
 listener "tcp" {
@@ -281,18 +291,18 @@ listener "tcp" {
   tls_disable = true
 }
 
-%{ if worker_kms_id != "" ~}
-kms "awskms" {
-  purpose    = "worker-auth"
-  region     = "${aws_region}"
-  kms_key_id = "${worker_kms_id}"
-%{ if kms_endpoint != "" ~}
-  endpoint   = "${kms_endpoint}"
+%{ if worker_registration_method == "kms_led" ~}
+  kms "awskms" {
+    purpose    = "worker-auth"
+    region     = "${aws_region}"
+    kms_key_id = "$KMS_WORKER_ID"
+  %{ if kms_endpoint != "" ~}
+    endpoint   = "${kms_endpoint}"
+  %{ endif ~}
+  }
 %{ endif ~}
-}
-%{ endif ~}
-
 EOF
+
   chown $BOUNDARY_USER:$BOUNDARY_GROUP $BOUNDARY_CONFIG_PATH
   chmod 640 $BOUNDARY_CONFIG_PATH
 }
