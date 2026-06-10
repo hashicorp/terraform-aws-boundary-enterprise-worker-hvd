@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: MPL-2.0
 
 # --- Provider --- #
-region = "us-east-1"
+region = "<us-east-1>"
 
 # ---Common --- #
 friendly_name_prefix = "<acme-hcp>" #This should be unique across all deployments
@@ -19,7 +19,7 @@ worker_is_internal       = <true>
 enable_session_recording = <true>
 hcp_boundary_cluster_id  = "<id>"
 worker_tags = {
-  bsr = "enabled"
+  bsr = "<enabled>"
 }
 
 # --- Networking --- #

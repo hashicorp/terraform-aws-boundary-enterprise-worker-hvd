@@ -48,16 +48,20 @@ Unless deploying a Boundary HCP Worker, you will require a Boundary Enterprise C
         │   ├── main.tf
         │   ├── outputs.tf
         │   ├── terraform.tfvars
-        │   └── variables.tf
+        │   ├── variables.tf
+        │   └── variables_provider.tf
         └── sandbox
             ├── backend.tf
             ├── main.tf
             ├── outputs.tf
             ├── terraform.tfvars
-            └── variables.tf
+            ├── variables.tf
+            └── variables_provider.tf
     ```
 
     >📝 Note: in this example, the user will have two separate Boundary deployments; one for their `sandbox` environment, and one for their `production` environment. This is recommended, but not required.
+
+    >📝 Note: `variables_provider.tf` defines provider configuration variables (not module variables) and must be copied from the examples directory.
 
 1. (Optional) Uncomment and update the [S3 remote state backend](https://developer.hashicorp.com/terraform/language/settings/backends/s3) configuration provided in the `backend.tf` file with your own custom values. While this step is highly recommended, it is technically not required to use a remote backend config for your Boundary deployment.
 
@@ -115,16 +119,20 @@ Unless deploying a Boundary HCP Worker, you will require a Boundary Enterprise C
           │   ├── main.tf
           │   ├── outputs.tf
           │   ├── terraform.tfvars
-          │   └── variables.tf
+          │   ├── variables.tf
+          │   └── variables_provider.tf
           └── sandbox
               ├── backend.tf
               ├── main.tf
               ├── outputs.tf
               ├── terraform.tfvars
-              └── variables.tf
+              ├── variables.tf
+              └── variables_provider.tf
     ```
 
     >📝 Note: in this example, the user will have two separate Boundary deployments; one for their `sandbox` environment, and one for their `production` environment. This is recommended, but not required.
+
+    >📝 Note: `variables_provider.tf` defines provider configuration variables (not module variables) and must be copied from the examples directory.
 
 1. (Optional) Uncomment and update the [S3 remote state backend](https://developer.hashicorp.com/terraform/language/settings/backends/s3) configuration provided in the `backend.tf` file with your own custom values. While this step is highly recommended, it is technically not required to use a remote backend config for your Boundary deployment.
 
@@ -198,20 +206,20 @@ Please note that there is no official Service Level Agreement (SLA) for support 
 ## Requirements
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.9 |
 | <a name="requirement_aws"></a> [aws](#requirement\_aws) | >= 5.51.0 |
 
 ## Providers
 
 | Name | Version |
-|------|---------|
+| ---- | ------- |
 | <a name="provider_aws"></a> [aws](#provider\_aws) | >= 5.51.0 |
 
 ## Resources
 
 | Name | Type |
-|------|------|
+| ---- | ---- |
 | [aws_autoscaling_group.boundary](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/autoscaling_group) | resource |
 | [aws_iam_instance_profile.boundary_ec2](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_instance_profile) | resource |
 | [aws_iam_role.boundary_ec2](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
@@ -252,7 +260,7 @@ Please note that there is no official Service Level Agreement (SLA) for support 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
-|------|-------------|------|---------|:--------:|
+| ---- | ----------- | ---- | ------- | :------: |
 | <a name="input_friendly_name_prefix"></a> [friendly\_name\_prefix](#input\_friendly\_name\_prefix) | Friendly name prefix used for uniquely naming AWS resources. This should be unique across all deployments | `string` | n/a | yes |
 | <a name="input_vpc_id"></a> [vpc\_id](#input\_vpc\_id) | ID of VPC where Boundary will be deployed. | `string` | n/a | yes |
 | <a name="input_worker_subnet_ids"></a> [worker\_subnet\_ids](#input\_worker\_subnet\_ids) | List of subnet IDs to use for the EC2 instance. Unless the workers need to be publicly exposed (example: ingress workers), use private subnets. | `list(string)` | n/a | yes |
@@ -295,7 +303,7 @@ Please note that there is no official Service Level Agreement (SLA) for support 
 ## Outputs
 
 | Name | Description |
-|------|-------------|
+| ---- | ----------- |
 | <a name="output_boundary_worker_iam_role_name"></a> [boundary\_worker\_iam\_role\_name](#output\_boundary\_worker\_iam\_role\_name) | Name of the IAM role for Boundary Worker instances. |
 | <a name="output_proxy_lb_dns_name"></a> [proxy\_lb\_dns\_name](#output\_proxy\_lb\_dns\_name) | DNS name of the Load Balancer. |
 <!-- END_TF_DOCS -->
