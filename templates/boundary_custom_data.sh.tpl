@@ -258,7 +258,7 @@ worker {
     # Worker name (set from $VM_NAME, typically the EC2 instance-id) is mandatory for worker KMS auth
     name = "$VM_NAME"
   %{ else ~}
-    a# Auth storage backend is always required unless it's KMS auth
+    # Auth storage backend is always required unless it's KMS auth
     auth_storage_path = "$BOUNDARY_DIR_DATA"
   %{ endif ~}
 
