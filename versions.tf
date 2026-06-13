@@ -9,5 +9,13 @@ terraform {
       source  = "hashicorp/aws"
       version = ">= 6.46.0"
     }
+    hcp = {
+      source  = "hashicorp/hcp"
+      version = ">= 0.111.0"
+    }
+    local = {
+      source  = "hashicorp/local"
+      version = ">= 2.9.0"
+    }
   }
 }

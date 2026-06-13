@@ -27,8 +27,8 @@ variable "boundary_version" {
   description = "Version of Boundary to install."
   default     = "0.21.3+ent"
   validation {
-    condition     = can(regex("^[0-9]+\\.[0-9]+\\.[0-9]+\\+ent$", var.boundary_version))
-    error_message = "Value must be in the format 'X.Y.Z+ent'."
+    condition     = can(regex("^[0-9]+\\.[0-9]+\\.[0-9]+(\\+ent)?$", var.boundary_version))
+    error_message = "Value must be in the format 'X.Y.Z' or 'X.Y.Z+ent'."
   }
 }
 
@@ -61,6 +61,10 @@ variable "worker_registration_method" {
   validation {
     condition     = contains(["worker-led", "controller-led", "kms-led"], var.worker_registration_method)
     error_message = "Worker registration method must be one of 'worker-led', 'controller-led', or 'kms-led'."
+  }
+  validation {
+    condition     = var.hcp_boundary_cluster_id != "" && !contains(["kms-led"], var.worker_registration_method)
+    error_message = "kms-led worker registration method is not currently supported with HCP Boundary."
   }
 }
 

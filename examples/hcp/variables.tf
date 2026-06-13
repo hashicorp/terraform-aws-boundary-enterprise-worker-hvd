@@ -25,11 +25,20 @@ variable "common_tags" {
 variable "boundary_version" {
   type        = string
   description = "Version of Boundary to install."
-  default     = "0.17.1+ent"
+  default     = "0.21.3+ent"
   validation {
     condition     = can(regex("^[0-9]+\\.[0-9]+\\.[0-9]+\\+ent$", var.boundary_version))
-    error_message = "Value must be in the format 'X.Y.Z+ent'."
+    error_message = "Value must be in the format 'X.Y.Z+ent'. For HCP Boundary, the worker must be an enterprise version worker."
   }
+
+  validation {
+    condition = abs(
+      tonumber(split(".", split("+", var.boundary_version)[0])[1]) -
+      tonumber(split(".", split("+", data.hcp_boundary_cluster.this[0].version)[0])[1])
+    ) <= 1
+    error_message = "Controller and worker versions must be within one minor version of each other."
+  }
+
 }
 
 variable "boundary_upstream" {
@@ -42,6 +51,18 @@ variable "boundary_upstream_port" {
   type        = number
   description = "Port for the worker to connect to. Typically 9201 to connect to a controller, 9202 to a worker."
   default     = 9202
+}
+
+variable "hcp_client_id" {
+  type        = string
+  description = "HCP client ID for API authentication. Only used when connecting to HCP Boundary."
+  default     = ""
+}
+
+variable "hcp_client_secret" {
+  type        = string
+  description = "HCP client secret for API authentication. Only used when connecting to HCP Boundary."
+  default     = ""
 }
 
 variable "hcp_boundary_cluster_id" {
@@ -58,6 +79,26 @@ variable "hcp_boundary_cluster_id" {
   }
 }
 
+variable "hcp_boundary_cluster_name" {
+  type        = string
+  description = "Name of the Boundary cluster in HCP. Only used when using HCP Boundary."
+  default     = ""
+  validation {
+    condition     = var.hcp_boundary_cluster_name != "" ? var.hcp_boundary_cluster_id != null : true
+    error_message = "HCP Boundary cluster name must also be provided when `hcp_boundary_cluster_id` is provided."
+  }
+}
+
+variable "hcp_boundary_project_id" {
+  type        = string
+  description = "ID of the HCP project where the Boundary cluster is running. Only used when using HCP Boundary."
+  default     = ""
+  validation {
+    condition     = var.hcp_boundary_cluster_id != "" ? length(var.hcp_boundary_project_id) > 0 : true
+    error_message = "HCP project ID must be provided when `hcp_boundary_cluster_id` is provided."
+  }
+}
+
 variable "worker_registration_method" {
   type        = string
   description = "Method for registering the worker with the Boundary cluster. Supported values are `worker-led`, `controller-led`, and `kms-led`."
@@ -65,6 +106,10 @@ variable "worker_registration_method" {
   validation {
     condition     = contains(["worker-led", "controller-led", "kms-led"], var.worker_registration_method)
     error_message = "Worker registration method must be one of 'worker-led', 'controller-led', or 'kms-led'."
+  }
+  validation {
+    condition     = var.hcp_boundary_cluster_id != "" && !contains(["kms-led"], var.worker_registration_method)
+    error_message = "kms-led worker registration method is not currently supported with HCP Boundary."
   }
 }
 
