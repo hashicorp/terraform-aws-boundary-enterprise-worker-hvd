@@ -132,12 +132,7 @@ Unless deploying a Boundary HCP Worker, you will require a Boundary Enterprise C
 
     >📝 Note: The `friendly_name_prefix` variable should be unique for every agent deployment.
 
-     If using controller-led worker authorization, follow [these instructions](https://developer.hashicorp.com/boundary/docs/workers/registration#controller-led-authorization) to use the Boundary CLI (UI not currently supported) to get the Boundary controller PKI token from the HCP server.  Make sure to set the `controller_generated_activation_token` variable to the value returned by the CLI.
-
-     If using worker-led worker authorization [details here](https://developer.hashicorp.com/boundary/docs/workers/registration#worker-led-authorization), leave the `controller_generated_activation_token` variable empty. You'll complete the registration in step 11 below.
-
-    >📝 Note: kms-led worker authorization is not currently supported for HCP Boundary
-
+If using controller-led worker deployment, follow the steps described in the [HCP deployment customization docs](/docs/hcp-deployment-customizations.md).
 
 1. Navigate to the directory of your newly created Terraform configuration for your Boundary Worker deployment, and run `terraform init`, `terraform plan`, and `terraform apply`.
 
